@@ -1,0 +1,239 @@
+.mainContainer {
+  min-height: 100vh;
+  display: flex;
+  background-color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* Left Branding Panel: Soft Bubble Style */
+.leftBrandPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 60px;
+  color: white;
+  background: linear-gradient(180deg, #090c27 0%, #c6c8da 100%);
+  position: relative;
+  overflow: hidden;
+  border-radius: 0; /* Removing old radius */
+}
+
+/* The Bubble Layer */
+.leftBrandPanel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -25%; /* Scoops into the orange panel */
+  width: 50%;
+  height: 100%;
+  background: #ffffff;
+  /* This creates the smooth vertical elliptical curve */
+  border-radius: 100% 0 0 150% / 100%;
+  z-index: 1;
+}
+
+.brandLogo {
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  z-index: 5; /* Keep above bubble */
+}
+
+.heroTextContainer {
+  margin-top: 20%;
+  z-index: 5; /* Keep above bubble */
+}
+
+.brandHeadline {
+  font-weight: 800 !important;
+  font-size: 4rem !important;
+  line-height: 1.1 !important;
+  margin-bottom: 10px !important;
+}
+
+.brandSubtext {
+  font-size: 1.2rem !important;
+  font-weight: 500 !important;
+  opacity: 0.9;
+}
+
+.illustrationContainer {
+  margin-top: auto;
+  text-align: center;
+  padding-bottom: 40px;
+  z-index: 5; /* Keep above bubble */
+  
+}
+
+.brandImage {
+  width: 100%;
+  max-width: 350px;
+  border-radius: 350px;
+  
+  
+  
+  
+}
+
+/* Right Panel */
+.rightAuthPanel {
+  flex: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background-color: #ffffff;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 420px;
+}
+
+.topNav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 80px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.signUpLink {
+  color: #242845;
+}
+
+/* Input Overrides */
+.textField :global(.MuiInput-underline:before) {
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.textField :global(.MuiInput-underline:after) {
+  border-bottom: 2px solid #242845!important;
+}
+
+.forgotPassword {
+  display: block;
+  text-align: right;
+  color: #a0a0a0;
+  font-size: 0.85rem;
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+.loginButton {
+  background-color: #242845 !important;
+  color: white !important;
+  padding: 14px !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  margin-top: 40px !important;
+  box-shadow: 0 4px 15px rgba(31, 28, 221, 0.4) !important;
+}
+
+.footerText {
+  margin-top: 60px !important;
+  text-align: center;
+  font-size: 0.8rem !important;
+  color: #242845;
+}
+
+/* --- Mobile Breakpoints --- */
+
+@media (max-width: 900px) {
+  .mainContainer {
+    flex-direction: column;
+  }
+
+  .leftBrandPanel {
+    flex: none;
+    height: 35vh;
+    padding: 30px;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Transition the side bubble into a bottom bubble for mobile */
+  .leftBrandPanel::after {
+    width: 160%;
+    height: 50%;
+    bottom: -25%;
+    top: auto;
+    right: -30%;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  }
+
+  .heroTextContainer {
+    margin-top: 15px;
+  }
+
+  .brandHeadline {
+    font-size: 2.2rem !important;
+  }
+
+  .illustrationContainer {
+    display: none;
+    color: #242845;
+  }
+
+  .rightAuthPanel {
+    flex: 1;
+    padding: 20px;
+    padding-top: 40px;
+  }
+
+  .topNav {
+    margin-bottom: 40px;
+  }
+}
+
+/* --- Role Selection remains consistent with the brand --- */
+.roleSelectionContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fffaf5;
+  padding: 20px;
+}
+
+.roleBrandTitle {
+  font-weight: 800 !important;
+  color: #242845;
+  text-align: center;
+  font-size: clamp(2rem, 5vw, 3rem) !important;
+}
+
+.roleSubTitle {
+  margin-bottom: 32px !important;
+  text-align: center;
+  color: #666;
+}
+
+.selectionCard {
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 16px !important;
+  transition: all 0.3s ease;
+  background: #ffffff;
+}
+
+.selectionCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(255, 109, 0, 0.15) !important;
+}
+
+.iconWrapperManager, .iconWrapperEmployee {
+  background-color: #fff4e5;
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 50%;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}

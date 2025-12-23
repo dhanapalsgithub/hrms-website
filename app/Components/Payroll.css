@@ -1,0 +1,143 @@
+.mainContainer {
+  min-height: 100vh;
+  display: flex;
+  background-color: #ffffff;
+}
+
+/* Left Panel with the Curve */
+.leftBrandPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 60px;
+  color: white;
+  background: linear-gradient(180deg, #ff9800 0%, #f57c00 100%);
+  position: relative;
+  border-bottom-right-radius: 45% 100%;
+  overflow: hidden;
+}
+
+.brandLogo {
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brandHeadline {
+  font-weight: 800 !important;
+  font-size: 4rem !important;
+  line-height: 1.1 !important;
+  margin-bottom: 10px !important;
+}
+
+.brandSubtext {
+  font-size: 1.2rem !important;
+  font-weight: 500 !important;
+  opacity: 0.9;
+}
+
+.illustrationContainer {
+  margin-top: auto;
+  text-align: center;
+  padding-bottom: 40px;
+}
+
+.brandImage {
+  width: 100%;
+  max-width: 350px;
+}
+
+/* Right Panel */
+.rightAuthPanel {
+  flex: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Input Overrides for Standard Variant */
+.textField :global(.MuiInput-underline:before) {
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.textField :global(.MuiInput-underline:after) {
+  border-bottom: 2px solid #ff6d00 !important;
+}
+
+.forgotPassword {
+  display: block;
+  text-align: right;
+  color: #a0a0a0;
+  font-size: 0.85rem;
+  margin-top: 12px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.loginButton {
+  background-color: #ff6d00 !important;
+  color: white !important;
+  padding: 14px !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  margin-top: 40px !important;
+  box-shadow: 0 4px 15px rgba(255, 109, 0, 0.4) !important;
+}
+
+.loginButton:hover {
+  background-color: #e65100 !important;
+}
+
+.footerText {
+  margin-top: 80px !important;
+  text-align: center;
+  font-size: 0.8rem !important;
+  color: #bbb;
+  font-weight: 500;
+}
+
+/* Role Selection Specifics */
+.roleSelectionContainer {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fffaf5;
+}
+
+.roleBrandTitle {
+  font-weight: 800 !important;
+  color: #ff6d00;
+  margin-bottom: 8px !important;
+}
+
+.selectionCard {
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 16px !important;
+  transition: all 0.3s ease;
+  border: 2px solid transparent !important;
+}
+
+.selectionCard:hover {
+  transform: translateY(-8px);
+  border-color: #ff6d00 !important;
+  box-shadow: 0 10px 30px rgba(255, 109, 0, 0.1) !important;
+}
+
+@media (max-width: 900px) {
+  .leftBrandPanel {
+    display: none;
+  }
+}

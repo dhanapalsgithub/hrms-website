@@ -1,65 +1,146 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import { Box, IconButton, AppBar, Toolbar, Typography } from '@mui/material';
+import { Menu as MenuIcon } from 'lucide-react';
+
+// Components
+import { Sidebar, type Page } from './Components/Sidebar';
+import { Header } from './Components/Header';
+import LoginForm from './Components/LoginForm';
+import { Home } from './Components/Home';
+
+// Page Modules
+import { Dashboard } from './Components/Dashboard';
+import { EmployeeDashboard } from './Components/EmployeeDashboard';
+import { Attendance } from './Components/Attendance';
+import { LeaveManagement } from './Components/LeaveManagement';
+import { EmployeeList } from './Components/EmployeeList';
+import PayrollManagement from './Components/PayrollTable';
+import IntegrationsPage from './integrations/page'; 
+
+export default function App() {
+  // --- States ---
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLogin, setShowLogin] = useState(false); 
+  const [userRole, setUserRole] = useState<'manager' | 'employee'>('employee');
+  const [currentPage, setCurrentPage] = useState<Page>('dashboard');
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // --- Hydration Fix ---
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // --- Handlers ---
+  const handleLogin = (role: 'manager' | 'employee') => {
+    setUserRole(role);
+    setIsAuthenticated(true);
+    setCurrentPage('dashboard');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setShowLogin(false); // Returns to Home Landing Page
+    setCurrentPage('dashboard');
+    setMobileOpen(false);
+  };
+
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
+
+  // --- Router Logic ---
+  const renderContent = () => {
+    if (userRole === 'manager') {
+      switch (currentPage) {
+        case 'dashboard': return <Dashboard />;
+        case 'employees': return <EmployeeList />;
+        case 'attendance': return <Attendance />;
+        case 'payroll': return <PayrollManagement />;
+        case 'leave': return <LeaveManagement />;
+        case 'integrations': return <IntegrationsPage />;
+        default: return <Dashboard />;
+      }
+    }
+
+    // Employee Role Pages
+    switch (currentPage) {
+      case 'dashboard': return <EmployeeDashboard />;
+      case 'attendance': return <Attendance />;
+      case 'leave': return <LeaveManagement />;
+      default: return <EmployeeDashboard />;
+    }
+  };
+
+  if (!mounted) return null;
+
+  // --- VIEW 1: Landing Page (R & I Work Sphere Home) ---
+  if (!isAuthenticated && !showLogin) {
+    return <Home onGetStarted={() => setShowLogin(true)} />;
+  }
+
+  // --- VIEW 2: Authentication (Login / Sign Up / Role Selection) ---
+  if (!isAuthenticated && showLogin) {
+    return (
+      <LoginForm 
+        onLogin={handleLogin} 
+        onBackToHome={() => setShowLogin(false)} 
+      />
+    );
+  }
+
+  // --- VIEW 3: Main HRMS Dashboard (Post-Login) ---
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <Box sx={{ display: 'flex', height: '100vh', width: '100vw', bgcolor: '#f8fafc', overflow: 'hidden' }}>
+      
+      {/* Sidebar Navigation */}
+      <Box component="nav" sx={{ width: { md: 240 }, flexShrink: { md: 0 } }}>
+        <Sidebar 
+          userRole={userRole} 
+          currentPage={currentPage} 
+          onPageChange={setCurrentPage}
+          isMobileOpen={mobileOpen}
+          onMobileClose={handleDrawerToggle}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </Box>
+
+      {/* Main Container */}
+      <Box sx={{ 
+        flexGrow: 1, 
+        display: 'flex', 
+        flexDirection: 'column', 
+        width: { xs: '100%', md: 'calc(100% - 240px)' }, 
+        height: '100vh', 
+        overflow: 'hidden' 
+      }}>
+        
+        {/* Mobile Header */}
+        <AppBar position="static" color="inherit" elevation={0} sx={{ display: { md: 'none' }, borderBottom: '1px solid #e2e8f0' }}>
+          <Toolbar>
+            <IconButton edge="start" color="inherit" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
+              <MenuIcon size={20} />
+            </IconButton>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#2563eb' }}>
+              R&I WorkSphere
+            </Typography>
+          </Toolbar>
+        </AppBar>
+
+        {/* Desktop Header */}
+        <Header onLogout={handleLogout} userRole={userRole} />
+        
+        {/* Scrollable Page Body */}
+        <Box sx={{ 
+          p: { xs: 2, md: 4 }, 
+          overflowY: 'auto', 
+          flexGrow: 1, 
+          bgcolor: '#f8fafc' 
+        }}>
+          <Box sx={{ maxWidth: '1600px', mx: 'auto' }}>
+            {renderContent()}
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }
