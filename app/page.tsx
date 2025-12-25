@@ -19,6 +19,7 @@ import { EmployeeList } from './Components/EmployeeList';
 import PayrollManagement from './Components/PayrollTable';
 import IntegrationsPage from './integrations/page'; 
 
+
 export default function App() {
   // --- States ---
   const [isAuthenticated, setIsAuthenticated] = useState(false);

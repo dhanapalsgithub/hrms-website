@@ -1,12 +1,19 @@
+"use client";
+
 import {
-    Box, Typography, Grid, Paper, Card, CardContent,
+    Box, Typography,  Grid, Paper, Card, CardContent,
     List, ListItem, ListItemAvatar, ListItemText, Divider, Avatar
 } from '@mui/material';
-import { Users, UserCheck, UserX, Calendar } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { 
+    Users, UserCheck, UserX, Calendar 
+} from 'lucide-react';
+import { 
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, 
+    Tooltip as RechartsTooltip 
+} from 'recharts';
 
 export function Dashboard() {
-    // --- Data Arrays (Defined inside the component) ---
+    // --- Data Arrays ---
     const stats = [
         { label: 'Total Employees', value: '154', icon: Users },
         { label: 'Present Today', value: '142', icon: UserCheck },
@@ -31,12 +38,15 @@ export function Dashboard() {
 
     return (
         <Box sx={{ p: 3 }}>
+            {/* Header Section: Simple Title */}
             <Box sx={{ mb: 4 }}>
                 <Typography variant="h5" fontWeight="bold">Dashboard Overview</Typography>
-                <Typography variant="body2" color="text.secondary">Welcome back! Here's what's happening today.</Typography>
+                <Typography variant="body2" color="text.secondary">
+                    Welcome back! Here's what's happening today.
+                </Typography>
             </Box>
 
-            {/* Stats Cards - Updated to Grid size syntax */}
+            {/* Stats Cards */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
                 {stats.map((stat) => (
                     <Grid size={{ xs: 12, sm: 6, md: 3 }} key={stat.label}>
@@ -67,7 +77,7 @@ export function Dashboard() {
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                     <XAxis dataKey="month" axisLine={false} tickLine={false} />
                                     <YAxis axisLine={false} tickLine={false} />
-                                    <Tooltip cursor={{ fill: '#f3f4f6' }} />
+                                    <RechartsTooltip cursor={{ fill: '#f3f4f6' }} />
                                     <Bar dataKey="present" fill="#2563eb" radius={[4, 4, 0, 0]} />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -93,7 +103,9 @@ export function Dashboard() {
                                             secondary={activity.action}
                                             primaryTypographyProps={{ variant: 'body2', fontWeight: 600 }}
                                         />
-                                        <Typography variant="caption" color="text.secondary">{activity.time}</Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                            {activity.time}
+                                        </Typography>
                                     </ListItem>
                                     {index < recentActivities.length - 1 && <Divider />}
                                 </Box>

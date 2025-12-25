@@ -1,10 +1,23 @@
 "use client";
 
-import { useState } from 'react';
-import { Box, Typography, Button, TextField, Divider, Card } from '@mui/material';
-import Grid from '@mui/material/Grid'; // Using Grid2 for modern MUI support
-import { ArrowLeft, Globe, X } from 'lucide-react';
-import styles from './SignUpForm.module.css';
+import { useState, useMemo } from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Card,
+  Container,
+   Grid,
+  Dialog,
+  DialogContent,
+  Zoom,
+  InputAdornment,
+  IconButton,
+  Alert,
+  LinearProgress
+} from '@mui/material';
+import { ArrowLeft, ChevronsLeft, Globe, Eye, EyeOff, Mail } from 'lucide-react';
 
 type Step = 'purpose' | 'details';
 
@@ -15,147 +28,189 @@ interface SignUpFormProps {
 export default function SignUpForm({ onBackToLogin }: SignUpFormProps) {
   const [step, setStep] = useState<Step>('purpose');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState('');
 
-  const handlePurposeSelect = (selectedRole: string) => {
-    setRole(selectedRole);
-    setStep('details');
+  const existingUsers = ['admin@company.com', 'test@test.com'];
+
+  // --- Real-time Password Strength Logic ---
+  const getPasswordStrength = (pwd: string) => {
+    let score = 0;
+    if (!pwd) return { score: 0, color: '#e2e8f0', label: '' };
+    
+    if (pwd.length >= 6) score += 25;
+    if (pwd.length >= 10) score += 25;
+    if (/[0-9]/.test(pwd)) score += 25;
+    if (/[^A-Za-z0-9]/.test(pwd)) score += 25;
+
+    if (score <= 25) return { score, color: '#ef4444', label: 'Weak' }; 
+    if (score <= 50) return { score, color: '#f97316', label: 'Fair' }; 
+    if (score <= 75) return { score, color: '#eab308', label: 'Good' }; 
+    return { score, color: '#22c55e', label: 'Strong' }; 
+  };
+
+  const strength = useMemo(() => getPasswordStrength(password), [password]);
+
+  const validateEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
+
+  const handleRegister = () => {
+    setError('');
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      return;
+    }
+    if (existingUsers.includes(email.toLowerCase())) {
+      setError('This email is already registered.');
+      return;
+    }
+    setShowSuccess(true);
   };
 
   return (
-    <Box className={styles.container} sx={{ position: 'relative', minHeight: '100vh', pt: 8 }}>
-      
-      {/* TOP RIGHT BACK BUTTON */}
-      <Box 
-        sx={{ 
-          position: 'absolute', 
-          top: 24, 
-          right: 24, 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: 1,
-          zIndex: 10
-        }}
-      >
-        <Typography 
-          variant="body2" 
-          sx={{ display: { xs: 'none', sm: 'block' }, color: 'text.secondary' }}
-        >
-          Already have an account?
-        </Typography>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #d9dad6c9 0%, #5276b3c9 100%)' }}>
+      {/* Top Nav */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#64748b' }}>
+          <Globe size={20} />
+          <Typography variant="caption" sx={{ fontWeight: 700 }}>EN</Typography>
+        </Box>
         <Button 
-          variant="text" 
-          startIcon={<X size={18} />}
+          variant="contained" 
+          startIcon={<ChevronsLeft size={18} />}
           onClick={onBackToLogin}
-          sx={{ 
-            fontWeight: 700, 
-            color: '#2563eb',
-            '&:hover': { backgroundColor: 'rgba(37, 99, 235, 0.04)' }
-          }}
+          sx={{ bgcolor: '#242845', borderRadius: '10px', textTransform: 'none' }}
         >
           Login
         </Button>
       </Box>
 
-      {/* Language/Globe Icon (Top Left) */}
-      <Box sx={{ position: 'absolute', top: 24, left: 24 }}>
-        <Globe size={20} color="#64748b" />
-      </Box>
+      <Container maxWidth="lg" sx={{ pt: 4, pb: 8 }}>
+        {step === 'purpose' ? (
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, color: '#0f172a' }}>Join the platform</Typography>
+            <Grid container spacing={3} justifyContent="center" sx={{ mt: 4 }}>
+              {[
+                { id: 'emp', title: 'The Employee', img: 'https://cdn.pixabay.com/photo/2024/04/05/17/15/man-8677824_1280.png' },
+                { id: 'mgr', title: 'The Manager', img: 'https://cdn.pixabay.com/photo/2017/05/16/13/41/work-2317806_1280.png' },
+                { id: 'hr', title: 'The HR Admin', img: 'https://cdn-icons-png.flaticon.com/512/7858/7858502.png' }
+              ].map((item) => (
+                <Grid key={item.id} size={{ xs: 12, sm: 4 }}>
+                  <Card 
+                    onClick={() => { setRole(item.title); setStep('details'); }} 
+                    sx={{ p: 4, borderRadius: '24px', textAlign: 'center', cursor: 'pointer', bgcolor: '#242845', color: '#fff', transition: '0.3s', '&:hover': { transform: 'translateY(-5px)' } }}
+                  >
+                    <Box component="img" src={item.img} sx={{ width: 80, mb: 2 }} />
+                    <Typography variant="h6" fontWeight={800}>{item.title}</Typography>
+                    
+                  </Card>
+                  
+                </Grid>
+              ))}
+            </Grid>
+            <Typography 
+  variant="body2" 
+  sx={{ 
+    opacity: 0.8, 
+    fontSize: '20px',
+    color: '#242845',
+    marginTop :'50px',
+    lineHeight: 1.4 // Optional: improves readability at larger font sizes
+  }}
+>
+  A comprehensive software suite designed to manage an organization’s most valuable asset: its people. 
+  It acts as a digital "brain" for the company, centralizing all employee data and automating the 
+  lifecycle of a staff member—from the day they apply for a job to the day they retire.
+</Typography>
+          </Box>
+        ) : (
+          <Box sx={{ maxWidth: 440, mx: 'auto' }}>
+            <Button startIcon={<ArrowLeft />} onClick={() => setStep('purpose')} sx={{ mb: 2, color: '#7592b9ff' }}>Back</Button>
+            <Typography variant="h4" fontWeight={800} mb={3}>Account Setup</Typography>
 
-      {step === 'purpose' ? (
-        <Box sx={{ textAlign: 'center', width: '100%', maxWidth: '1200px', mx: 'auto', px: 3 }}>
-          <Typography variant="h4" className={styles.title} sx={{ fontWeight: 800, mb: 1 }}>
-            What will you use the platform for?
-          </Typography>
-          <Typography className={styles.subtitle} sx={{ mb: 6, color: 'text.secondary' }}>
-            Select one of the options below
-          </Typography>
+            {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }}>{error}</Alert>}
 
-          <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-            {[
-              { id: 'manager', title: 'Hire people globally', desc: 'Hire in 150+ countries without opening an organization.', color: '#f3efff' },
-              { id: 'contractor', title: 'Work as a contractor', desc: 'Work compliantly, automate invoicing, and avoid fees.', color: '#e0f2fe' },
-              { id: 'profile', title: 'Create a profile', desc: 'Build your profile to unlock opportunities worldwide.', color: '#ffedd5' }
-            ].map((item) => (
-              <Grid size={{ xs: 12, md: 4 }} key={item.id}>
-                <Card 
-                  className={styles.purposeCard} 
-                  onClick={() => handlePurposeSelect(item.title)}
-                  sx={{ 
-                    p: 4, 
-                    cursor: 'pointer', 
-                    height: '100%', 
-                    transition: '0.3s', 
-                    '&:hover': { transform: 'translateY(-5px)', boxShadow: 3 } 
-                  }}
-                >
-                  <Box className={styles.iconBox} sx={{ bgcolor: item.color, width: 48, height: 48, borderRadius: '50%', mb: 3 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>{item.title}</Typography>
-                  <Typography variant="body2" color="text.secondary">{item.desc}</Typography>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      ) : (
-        <Box className={styles.formWrapper} sx={{ maxWidth: 450, mx: 'auto', px: 3 }}>
+            {/* --- LINE STYLE INPUT (Email) --- */}
+            <TextField
+              fullWidth 
+              label="Email Address" 
+              variant="standard" 
+              sx={{ mb: 4 }}
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)}
+              error={email !== '' && !validateEmail(email)}
+              helperText={email !== '' && !validateEmail(email) ? "Please enter a valid email format" : ""}
+            />
+
+            {/* --- LINE STYLE INPUT (Password) --- */}
+            <Box sx={{ mb: 4 }}>
+              <TextField
+                fullWidth 
+                label="Set Password" 
+                variant="standard"
+                type={showPassword ? 'text' : 'password'}
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+              {password.length > 0 && (
+                <Box sx={{ mt: 2 }}>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={strength.score} 
+                    sx={{ 
+                      height: 4, 
+                      borderRadius: 2, 
+                      bgcolor: '#e2e8f0', 
+                      '& .MuiLinearProgress-bar': { bgcolor: strength.color } 
+                    }} 
+                  />
+                  <Typography variant="caption" sx={{ color: strength.color, fontWeight: 700, mt: 0.5, display: 'block' }}>
+                    {strength.label} Strength
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+
+            <Button
+              fullWidth variant="contained" size="large" onClick={handleRegister}
+              disabled={!email || !password}
+              sx={{ py: 2, borderRadius: '12px', fontWeight: 700, bgcolor: '#2563eb', transition: '0.3s', '&:hover': { bgcolor: '#1d4ed8' } }}
+            >
+              Create Account
+            </Button>
+          </Box>
+        )}
+      </Container>
+
+      {/* Activation Dialog */}
+      <Dialog open={showSuccess} TransitionComponent={Zoom} PaperProps={{ sx: { borderRadius: '24px', bgcolor: '#242845', color: '#fff', p: 4, textAlign: 'center' } }}>
+        <DialogContent>
+          <Mail size={48} color="#4ade80" style={{ marginBottom: '16px' }} />
+          <Typography variant="h5" fontWeight={800} mb={2}>Check your Inbox</Typography>
+          <Typography sx={{ opacity: 0.8, mb: 4 }}>We sent an activation link to <b>{email}</b>. Click the button below to simulate the activation process.</Typography>
           <Button 
-            startIcon={<ArrowLeft size={18} />} 
-            onClick={() => setStep('purpose')}
-            sx={{ mb: 3, textTransform: 'none', color: 'text.secondary' }}
+            fullWidth variant="contained" onClick={onBackToLogin}
+            sx={{ bgcolor: '#4ade80', color: '#242845', fontWeight: 800, py: 1.5, borderRadius: '12px', '&:hover': { bgcolor: '#22c55e' } }}
           >
-             Back
+            Active your account
           </Button>
-
-          <Typography variant="h4" className={styles.title} sx={{ fontWeight: 800, mb: 1 }}>
-            Create your {role.toLowerCase()} account
-          </Typography>
-          <Typography className={styles.subtitle} sx={{ mb: 4, color: 'text.secondary' }}>
-            Sign up using the form, or your work Google account
-          </Typography>
-
-          <Button 
-            fullWidth 
-            variant="outlined" 
-            className={styles.socialButton}
-            startIcon={<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/smartlock/google.svg" width="20" alt="google" />}
-            sx={{ py: 1.5, mb: 3, borderRadius: 2, borderColor: '#e2e8f0', color: '#1e293b', textTransform: 'none' }}
-          >
-            Sign up with Google
-          </Button>
-
-          <Divider sx={{ mb: 3, color: 'text.disabled', fontSize: '0.875rem' }}>or</Divider>
-
-          <TextField
-            fullWidth
-            label="Email address *"
-            variant="outlined"
-            sx={{ mb: 3 }}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <Button 
-            fullWidth 
-            variant="contained" 
-            disabled={!email}
-            sx={{ 
-              py: 2, 
-              borderRadius: 2, 
-              bgcolor: email ? '#2563eb' : '#e2e8f0',
-              textTransform: 'none',
-              fontWeight: 700
-            }}
-          >
-            Continue
-          </Button>
-
-          <Typography sx={{ mt: 4, fontSize: '0.75rem', color: 'text.secondary', textAlign: 'center' }}>
-            By creating your account, you confirm that you have read, understood, and agree to the 
-            <span> WorkSphere Legal Hub</span>
-          </Typography>
-        </Box>
-      )}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }
